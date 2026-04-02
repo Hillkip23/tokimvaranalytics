@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tokim Analytics — Institutional-Grade Risk Analytics. Research-Driven.</title>
+  <meta name="description" content="Tokim Analytics brings institutional-grade quantitative risk methods to global and East African capital markets. GARCH-EVT, VaR backtesting, SHAP attribution, and stress testing advisory." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* ── Reset & Variables ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0D1B2A;
+      --navy2:  #122436;
+      --teal:   #0E7C7B;
+      --teal-lt:#14A5A3;
+      --mint:   #A8DADC;
+      --gold:   #E2B04A;
+      --cream:  #F4F1EC;
+      --slate:  #4A5568;
+      --muted:  #718096;
+      --white:  #FFFFFF;
+      --red:    #C0392B;
+      --green:  #1A7F4B;
+      --border: rgba(255,255,255,0.08);
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body: 'DM Sans', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-body); background: var(--navy); color: var(--white); overflow-x: hidden; }
+
+    /* ── Nav ───────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 3rem; height: 64px;
+      background: rgba(13,27,42,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--font-body); font-weight: 600; font-size: 1rem;
+      color: var(--white); letter-spacing: 0.08em; text-decoration: none;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .nav-logo-mark {
+      width: 28px; height: 28px; background: var(--teal);
+      display: grid; place-items: center; font-size: 0.75rem;
+      font-weight: 700; color: white;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: rgba(255,255,255,0.65); text-decoration: none;
+      font-size: 0.875rem; font-weight: 500; letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--mint); }
+    .nav-cta {
+      background: var(--teal); color: white; border: none;
+      padding: 0.5rem 1.25rem; font-family: var(--font-body);
+      font-size: 0.875rem; font-weight: 500; cursor: pointer;
+      text-decoration: none; transition: background 0.2s;
+    }
+    .nav-cta:hover { background: var(--teal-lt); }
+
+    /* ── Hero ──────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; padding: 6rem 3rem 4rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(14,124,123,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(226,176,74,0.06) 0%, transparent 50%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0.035;
+      background-image:
+        linear-gradient(var(--teal) 1px, transparent 1px),
+        linear-gradient(90deg, var(--teal) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-eyebrow {
+      font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.18em;
+      color: var(--teal); text-transform: uppercase; margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block; width: 32px; height: 1px; background: var(--teal);
+    }
+    h1.hero-title {
+      font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5.5rem);
+      line-height: 1.05; color: var(--white); max-width: 720px;
+      margin-bottom: 1.5rem; position: relative;
+    }
+    h1.hero-title em { color: var(--mint); font-style: italic; }
+    .hero-sub {
+      font-size: 1.125rem; color: rgba(255,255,255,0.6); max-width: 520px;
+      line-height: 1.7; margin-bottom: 3rem; font-weight: 300;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--teal); color: white; padding: 0.875rem 2rem;
+      font-family: var(--font-body); font-size: 0.9rem; font-weight: 500;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary:hover { background: var(--teal-lt); transform: translateY(-1px); }
+    .btn-outline {
+      border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.8);
+      padding: 0.875rem 2rem; font-family: var(--font-body); font-size: 0.9rem;
+      font-weight: 500; text-decoration: none; cursor: pointer;
+      transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+      background: transparent;
+    }
+    .btn-outline:hover { border-color: var(--mint); color: var(--mint); }
+
+    /* Stats strip */
+    .hero-stats {
+      display: flex; gap: 3rem; margin-top: 4rem; padding-top: 3rem;
+      border-top: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .stat-item { display: flex; flex-direction: column; gap: 4px; }
+    .stat-num {
+      font-family: var(--font-display); font-size: 2.5rem; color: var(--mint);
+      line-height: 1;
+    }
+    .stat-label { font-size: 0.8rem; color: var(--muted); letter-spacing: 0.06em; font-weight: 300; }
+
+    /* ── Section base ──────────────────────────────────────────── */
+    section { padding: 6rem 3rem; position: relative; }
+    .section-label {
+      font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.18em;
+      color: var(--teal); text-transform: uppercase; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .section-label::before { content:''; width:24px; height:1px; background:var(--teal); }
+    h2.section-title {
+      font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.15; margin-bottom: 1.25rem;
+    }
+    .section-intro {
+      font-size: 1.05rem; color: rgba(255,255,255,0.6);
+      max-width: 560px; line-height: 1.75; font-weight: 300; margin-bottom: 3.5rem;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    /* ── Research section ──────────────────────────────────────── */
+    #research { background: var(--navy); }
+    .research-grid {
+      display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; align-items: start;
+    }
+    .finding-card {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-left: 3px solid var(--teal); padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .finding-card h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--white); }
+    .finding-card p { font-size: 0.85rem; color: rgba(255,255,255,0.55); line-height: 1.6; }
+    .finding-stat {
+      font-family: var(--font-mono); font-size: 1.4rem; color: var(--mint);
+      font-weight: 500; display: block; margin-bottom: 0.3rem;
+    }
+
+    /* chart container */
+    .chart-panel {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      padding: 1.5rem;
+    }
+    .chart-title {
+      font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted);
+      letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .chart-wrap { position: relative; height: 260px; }
+    .chart-tabs {
+      display: flex; gap: 0; margin-bottom: 1rem;
+    }
+    .chart-tab {
+      font-family: var(--font-mono); font-size: 0.72rem; padding: 0.4rem 1rem;
+      border: 1px solid var(--border); cursor: pointer; background: transparent;
+      color: var(--muted); letter-spacing: 0.08em; transition: all 0.2s;
+    }
+    .chart-tab.active { background: var(--teal); color: white; border-color: var(--teal); }
+    .chart-tab:hover:not(.active) { border-color: var(--teal); color: var(--mint); }
+
+    /* SHAP bar chart */
+    .shap-bars { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1rem; }
+    .shap-row { display: flex; align-items: center; gap: 0.75rem; }
+    .shap-label { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); width: 150px; text-align: right; flex-shrink: 0; }
+    .shap-bar-track { flex: 1; height: 10px; background: rgba(255,255,255,0.05); }
+    .shap-bar-fill { height: 100%; transition: width 0.8s ease; }
+    .shap-value { font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); width: 55px; }
+
+    /* ── Services ──────────────────────────────────────────────── */
+    #services { background: var(--navy2); }
+    .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5px; }
+    .service-card {
+      background: rgba(255,255,255,0.025); padding: 2.5rem;
+      border-top: 2px solid transparent; transition: all 0.3s;
+      cursor: default;
+    }
+    .service-card:hover { background: rgba(255,255,255,0.05); border-top-color: var(--teal); }
+    .service-card.gold:hover { border-top-color: var(--gold); }
+    .service-card.purple:hover { border-top-color: #6B46C1; }
+    .service-card.green:hover { border-top-color: var(--green); }
+    .service-num {
+      font-family: var(--font-mono); font-size: 0.72rem; color: var(--teal);
+      letter-spacing: 0.12em; margin-bottom: 1.25rem; display: block;
+    }
+    .service-card.gold .service-num { color: var(--gold); }
+    .service-card.purple .service-num { color: #6B46C1; }
+    .service-card.green .service-num { color: var(--green); }
+    .service-card h3 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 0.75rem; }
+    .service-card p { font-size: 0.875rem; color: rgba(255,255,255,0.55); line-height: 1.7; margin-bottom: 1.5rem; }
+    .service-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag {
+      font-family: var(--font-mono); font-size: 0.68rem; padding: 0.25rem 0.6rem;
+      border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.4);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── SPX + Cross-Asset Results ─────────────────────────────── */
+    #results { background: var(--navy); }
+    .results-tabs {
+      display: flex; gap: 0; margin-bottom: 3rem; border-bottom: 1px solid var(--border);
+    }
+    .results-tab {
+      font-family: var(--font-body); font-size: 0.875rem; font-weight: 500;
+      padding: 0.875rem 2rem; border: none; background: transparent;
+      color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+      margin-bottom: -1px; transition: all 0.2s;
+    }
+    .results-tab.active { color: var(--mint); border-bottom-color: var(--teal); }
+    .results-tab:hover:not(.active) { color: rgba(255,255,255,0.7); }
+    .results-panel { display: none; }
+    .results-panel.active { display: block; }
+    .results-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+
+    /* backtest table */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em;
+      color: var(--muted); text-transform: uppercase; text-align: left;
+      padding: 0.6rem 1rem; border-bottom: 1px solid var(--border);
+    }
+    .data-table td {
+      font-family: var(--font-mono); font-size: 0.82rem; padding: 0.7rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04); color: rgba(255,255,255,0.8);
+    }
+    .data-table tr:hover td { background: rgba(255,255,255,0.03); }
+    .pass { color: var(--green) !important; font-weight: 600; }
+    .fail { color: var(--red) !important; font-weight: 600; }
+    .highlight-row td { background: rgba(14,124,123,0.08); }
+
+    /* regime bars */
+    .regime-chart { margin-top: 1rem; }
+    .regime-row {
+      display: grid; grid-template-columns: 130px 1fr 80px;
+      align-items: center; gap: 1rem; margin-bottom: 0.75rem;
+    }
+    .regime-label { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+    .regime-bars { display: flex; flex-direction: column; gap: 4px; }
+    .regime-bar {
+      height: 8px; display: flex; align-items: center; gap: 6px;
+      font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted);
+    }
+    .regime-bar-fill { height: 100%; transition: width 1s ease; min-width: 2px; }
+    .regime-bar-fill.garch { background: var(--teal); }
+    .regime-bar-fill.rnd { background: var(--gold); }
+    .regime-pct { font-family: var(--font-mono); font-size: 0.7rem; text-align: right; }
+
+    /* ── Mechanism section ─────────────────────────────────────── */
+    #mechanism { background: var(--navy2); }
+    .mechanism-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+    .mech-card {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      padding: 2rem;
+    }
+    .mech-icon {
+      width: 44px; height: 44px; background: rgba(14,124,123,0.15);
+      display: grid; place-items: center; margin-bottom: 1.25rem; font-size: 1.2rem;
+    }
+    .mech-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.6rem; }
+    .mech-card p { font-size: 0.84rem; color: rgba(255,255,255,0.55); line-height: 1.7; }
+    .mech-quote {
+      background: rgba(14,124,123,0.08); border-left: 3px solid var(--teal);
+      padding: 1.5rem 2rem; margin-top: 3rem;
+      font-family: var(--font-display); font-size: 1.6rem; font-style: italic;
+      color: var(--mint); line-height: 1.4;
+    }
+    .mech-quote span { display: block; font-family: var(--font-body); font-size: 0.8rem;
+      color: var(--muted); font-style: normal; margin-top: 0.75rem; font-weight: 300; }
+
+    /* ── Paper CTA ─────────────────────────────────────────────── */
+    #paper { background: var(--navy); }
+    .paper-card {
+      background: linear-gradient(135deg, rgba(14,124,123,0.15) 0%, rgba(13,27,42,0) 60%);
+      border: 1px solid rgba(14,124,123,0.3); padding: 4rem;
+      display: grid; grid-template-columns: 1fr auto; gap: 3rem; align-items: center;
+    }
+    .paper-meta {
+      font-family: var(--font-mono); font-size: 0.72rem; color: var(--teal);
+      letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .paper-card h2 { font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 1rem; }
+    .paper-card p { font-size: 0.9rem; color: rgba(255,255,255,0.6); line-height: 1.75; max-width: 560px; }
+    .paper-findings { margin-top: 2rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .paper-finding {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      font-size: 0.85rem; color: rgba(255,255,255,0.65); line-height: 1.5;
+    }
+    .paper-finding::before {
+      content: '→'; color: var(--teal); flex-shrink: 0; font-family: var(--font-mono);
+      margin-top: 1px;
+    }
+    .paper-actions { display: flex; flex-direction: column; gap: 1rem; align-items: flex-end; }
+    .paper-badge {
+      background: rgba(14,124,123,0.2); border: 1px solid rgba(14,124,123,0.4);
+      padding: 0.4rem 0.8rem; font-family: var(--font-mono); font-size: 0.7rem;
+      color: var(--mint); letter-spacing: 0.08em; text-align: center;
+    }
+
+    /* ── Contact ───────────────────────────────────────────────── */
+    #contact { background: var(--navy2); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; }
+    .contact-form { display: flex; flex-direction: column; gap: 1.25rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label { font-size: 0.8rem; color: var(--muted); font-weight: 500; letter-spacing: 0.04em; }
+    .form-group input, .form-group select, .form-group textarea {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      color: var(--white); padding: 0.75rem 1rem; font-family: var(--font-body);
+      font-size: 0.9rem; outline: none; transition: border-color 0.2s;
+      resize: none;
+    }
+    .form-group input:focus, .form-group select, .form-group textarea:focus {
+      border-color: var(--teal);
+    }
+    .form-group select option { background: var(--navy); }
+    .contact-info { display: flex; flex-direction: column; gap: 0.75rem; }
+    .contact-item {
+      display: flex; align-items: flex-start; gap: 1rem; padding: 1.25rem;
+      border: 1px solid var(--border);
+    }
+    .contact-item-icon {
+      width: 36px; height: 36px; background: rgba(14,124,123,0.15);
+      display: grid; place-items: center; flex-shrink: 0;
+      font-size: 0.9rem;
+    }
+    .contact-item-text h5 { font-size: 0.8rem; color: var(--muted); font-weight: 500; margin-bottom: 0.2rem; }
+    .contact-item-text p { font-size: 0.875rem; color: var(--white); }
+
+    /* ── Footer ────────────────────────────────────────────────── */
+    footer {
+      background: #080f16; padding: 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid var(--border); flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-logo { font-weight: 600; letter-spacing: 0.06em; font-size: 0.9rem; }
+    .footer-logo span { color: var(--teal); }
+    .footer-links { display: flex; gap: 2rem; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--mint); }
+    .footer-copy { font-size: 0.78rem; color: rgba(255,255,255,0.3); }
+
+    /* ── Animations ────────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.7s ease both; }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.45s; }
+    .delay-5 { animation-delay: 0.6s; }
+
+    /* scroll reveal */
+    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 0 1.5rem; }
+      .nav-links { display: none; }
+      section { padding: 4rem 1.5rem; }
+      .hero { padding: 6rem 1.5rem 4rem; }
+      .research-grid, .results-layout, .contact-grid { grid-template-columns: 1fr; }
+      .services-grid { grid-template-columns: 1fr; }
+      .mechanism-grid { grid-template-columns: 1fr; }
+      .paper-card { grid-template-columns: 1fr; }
+      .paper-actions { align-items: flex-start; }
+      .form-row { grid-template-columns: 1fr; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ──────────────────────────────────────────────────────── -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark">T</div>
+    TOKIM ANALYTICS
+  </a>
+  <ul class="nav-links">
+    <li><a href="#research">Research</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#mechanism">Methodology</a></li>
+    <li><a href="#paper">Paper</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Contact Us</a>
+</nav>
+
+<!-- ── Hero ────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="container" style="position:relative;">
+    <div class="hero-eyebrow fade-up">Working Paper Available</div>
+    <h1 class="hero-title fade-up delay-1">
+      Institutional-Grade<br/>Risk Analytics.<br/><em>Research-Driven.</em>
+    </h1>
+    <p class="hero-sub fade-up delay-2">
+      GARCH-EVT vs option-implied RND — formally backtested across SPX and
+      cross-asset ETF panels. Nine years. Five assets. COVID-19.
+      One consistent answer.
+    </p>
+    <div class="hero-actions fade-up delay-3">
+      <a href="#results" class="btn-primary">
+        Explore the Results
+        <span>→</span>
+      </a>
+      <a href="#paper" class="btn-outline">
+        Read the Paper
+      </a>
+    </div>
+    <div class="hero-stats fade-up delay-5">
+      <div class="stat-item">
+        <span class="stat-num">1,906</span>
+        <span class="stat-label">SPX Daily Obs</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">9,037</span>
+        <span class="stat-label">Cross-Asset Obs</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">0.94%</span>
+        <span class="stat-label">GARCH-EVT at 99%</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">5</span>
+        <span class="stat-label">Asset Classes</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">0.952</span>
+        <span class="stat-label">RF OOB R²</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Research Findings ────────────────────────────────────────────────── -->
+<section id="research">
+  <div class="container">
+    <div class="section-label reveal">Research</div>
+    <div class="research-grid">
+      <div>
+        <h2 class="section-title reveal">Key Findings</h2>
+        <p class="section-intro reveal">
+          Formal Kupiec, Christoffersen, and Diebold-Mariano tests
+          across five assets and three market regimes.
+        </p>
+        <div class="finding-card reveal">
+          <span class="finding-stat">0.94% vs 1.42%</span>
+          <h4>GARCH-EVT outperforms on calibration</h4>
+          <p>At 99% VaR, GARCH-EVT achieves near-perfect calibration. RND passes
+          but is 51% above nominal. Both pass Kupiec — but RND shows clustering.</p>
+        </div>
+        <div class="finding-card reveal" style="border-left-color:var(--gold)">
+          <span class="finding-stat" style="color:var(--gold)">3.49% vs 1.61%</span>
+          <h4>COVID-19 breaks RND across all assets</h4>
+          <p>During COVID 2020–21, GARCH-EVT violation rate: 1.61% ✓.
+          RND violation rate: 3.49% ✗. DM tests confirm GARCH wins
+          for all five assets (all p&lt;0.001).</p>
+        </div>
+        <div class="finding-card reveal" style="border-left-color:#6B46C1">
+          <span class="finding-stat" style="color:#A78BFA">β = −0.0181***</span>
+          <h4>GARCH σ(t) drives the spread</h4>
+          <p>Ranked #1 by OLS (β=−0.0181***) and #2 by SHAP. Rank #2 exogenous
+          driver in every cross-asset panel. R² gap of 0.286 confirms non-linearity.</p>
+        </div>
+      </div>
+
+      <div>
+        <!-- Chart panel with tabs -->
+        <div class="chart-panel reveal">
+          <div class="chart-tabs">
+            <button class="chart-tab active" onclick="switchChart('backtest')">Backtest Rates</button>
+            <button class="chart-tab" onclick="switchChart('regime')">Regime Analysis</button>
+            <button class="chart-tab" onclick="switchChart('shap')">SHAP Attribution</button>
+          </div>
+
+          <!-- Backtest chart -->
+          <div id="chart-backtest">
+            <div class="chart-title">SPX — 99% & 95% VaR Violation Rates vs Nominal</div>
+            <div class="chart-wrap"><canvas id="backtestChart"></canvas></div>
+          </div>
+
+          <!-- Regime chart -->
+          <div id="chart-regime" style="display:none">
+            <div class="chart-title">SPX — Violation Rates by Market Regime (99% VaR)</div>
+            <div class="regime-chart">
+              <div style="display:flex;gap:1.5rem;margin-bottom:1rem;">
+                <span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--teal);display:flex;align-items:center;gap:6px;"><span style="width:12px;height:4px;background:var(--teal);display:inline-block;"></span>GARCH-EVT</span>
+                <span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--gold);display:flex;align-items:center;gap:6px;"><span style="width:12px;height:4px;background:var(--gold);display:inline-block;"></span>RND</span>
+                <span style="font-family:var(--font-mono);font-size:0.7rem;color:rgba(255,255,255,0.3);display:flex;align-items:center;gap:6px;"><span style="width:12px;height:1px;background:rgba(255,255,255,0.3);display:inline-block;border-top:1px dashed rgba(255,255,255,0.3);"></span>Nominal 1%</span>
+              </div>
+              <div class="regime-row">
+                <div class="regime-label">Pre-COVID<br/>2015–2019</div>
+                <div class="regime-bars">
+                  <div class="regime-bar"><div class="regime-bar-fill garch" style="width:29%"></div><span>1.02%</span></div>
+                  <div class="regime-bar"><div class="regime-bar-fill rnd" style="width:19%"></div><span>0.68%</span></div>
+                </div>
+                <div class="regime-pct" style="color:var(--green)">Both ✓</div>
+              </div>
+              <div class="regime-row">
+                <div class="regime-label">COVID<br/>2020–2021</div>
+                <div class="regime-bars">
+                  <div class="regime-bar"><div class="regime-bar-fill garch" style="width:46%"></div><span>1.61%</span></div>
+                  <div class="regime-bar"><div class="regime-bar-fill rnd" style="width:100%"></div><span>3.49%</span></div>
+                </div>
+                <div class="regime-pct" style="color:var(--red)">RND ✗</div>
+              </div>
+              <div class="regime-row">
+                <div class="regime-label">Post-COVID<br/>2022–2023</div>
+                <div class="regime-bars">
+                  <div class="regime-bar"><div class="regime-bar-fill garch" style="width:0%"></div><span>0.00%</span></div>
+                  <div class="regime-bar"><div class="regime-bar-fill rnd" style="width:48%"></div><span>1.67%</span></div>
+                </div>
+                <div class="regime-pct" style="color:var(--gold)">Mixed</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SHAP chart -->
+          <div id="chart-shap" style="display:none">
+            <div class="chart-title">SHAP Feature Importance — 99% VaR Spread (OOB R² = 0.952)</div>
+            <div class="shap-bars" id="shapBars"></div>
+          </div>
+        </div>
+
+        <!-- Cross-asset summary -->
+        <div class="chart-panel reveal" style="margin-top:1.5rem;">
+          <div class="chart-title">Cross-Asset — GARCH-EVT vs RND (99% VaR)</div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Asset</th><th>GARCH Rate</th><th>RND Rate</th><th>DM Stat</th><th>Pass</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>GLD</td><td>0.75%</td><td>2.25%</td><td>14.70***</td><td class="pass">GARCH ✓</td></tr>
+              <tr><td>IWM</td><td>1.10%</td><td>2.56%</td><td>8.34***</td><td class="pass">GARCH ✓</td></tr>
+              <tr><td>QQQ</td><td>1.02%</td><td>2.71%</td><td>7.32***</td><td class="pass">GARCH ✓</td></tr>
+              <tr><td>TLT</td><td>0.66%</td><td>2.52%</td><td>12.89***</td><td class="pass">GARCH ✓</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Full Results Tables ──────────────────────────────────────────────── -->
+<section id="results">
+  <div class="container">
+    <div class="section-label reveal">Empirical Results</div>
+    <h2 class="section-title reveal">SPX & Cross-Asset Backtests</h2>
+
+    <div class="results-tabs">
+      <button class="results-tab active" onclick="switchResults('spx')">SPX Primary Study</button>
+      <button class="results-tab" onclick="switchResults('cross')">Cross-Asset Extension</button>
+      <button class="results-tab" onclick="switchResults('vrp')">Variance Risk Premium</button>
+    </div>
+
+    <!-- SPX Panel -->
+    <div class="results-panel active" id="panel-spx">
+      <div class="results-layout">
+        <div>
+          <div class="chart-title" style="margin-bottom:1rem;">Full Backtest Results — Kupiec & Christoffersen</div>
+          <table class="data-table">
+            <thead><tr><th>Model</th><th>Level</th><th>N</th><th>Rate</th><th>Kupiec p</th><th>CC p</th><th>Pass</th></tr></thead>
+            <tbody>
+              <tr class="highlight-row"><td>GARCH-EVT</td><td>99%</td><td>1,906</td><td>0.94%</td><td>0.805</td><td>0.161</td><td class="pass">✓ Both</td></tr>
+              <tr><td>RND</td><td>99%</td><td>1,906</td><td>1.42%</td><td>0.085</td><td>0.058</td><td class="pass">✓ Both</td></tr>
+              <tr class="highlight-row"><td>GARCH-EVT</td><td>95%</td><td>1,906</td><td>4.51%</td><td>0.321</td><td>0.052</td><td class="pass">✓ Both</td></tr>
+              <tr><td>RND</td><td>95%</td><td>1,906</td><td>5.82%</td><td>0.107</td><td style="color:var(--red)">&lt;0.001</td><td class="fail">✗ CC fail</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:2rem;">
+            <div class="chart-title" style="margin-bottom:1rem;">GARCH Scaling Robustness (CC p improvement)</div>
+            <table class="data-table">
+              <thead><tr><th>Scaling</th><th>Period</th><th>Viols</th><th>Rate</th><th>CC p</th><th>Pass</th></tr></thead>
+              <tbody>
+                <tr><td>√T</td><td>Full</td><td>27</td><td>1.42%</td><td>0.058</td><td class="pass">✓</td></tr>
+                <tr class="highlight-row"><td>GARCH</td><td>Full</td><td>27</td><td>1.42%</td><td style="color:var(--mint)">0.398 ↑</td><td class="pass">✓ improved</td></tr>
+                <tr><td>√T</td><td>COVID</td><td>13</td><td>3.70%</td><td>0.081</td><td class="fail">✗</td></tr>
+                <tr><td>GARCH</td><td>COVID</td><td>10</td><td>2.85%</td><td>0.443</td><td class="fail">✗ better</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <div class="chart-title" style="margin-bottom:1rem;">SHAP Feature Rankings — OLS vs RF</div>
+          <table class="data-table">
+            <thead><tr><th>Feature</th><th>OLS Rank</th><th>SHAP Rank</th><th>OLS β</th><th>|SHAP|</th></tr></thead>
+            <tbody>
+              <tr><td>rn_var₀₁</td><td>—</td><td>#1</td><td>—</td><td>0.0144</td></tr>
+              <tr class="highlight-row"><td>GARCH σ(t)</td><td>#1</td><td>#2</td><td style="color:var(--red)">−0.0181***</td><td>0.0097</td></tr>
+              <tr><td>ATM IV</td><td>#4</td><td>#3</td><td>−0.0054**</td><td>0.0004</td></tr>
+              <tr><td>Put-call skew</td><td>#5</td><td>#4</td><td>+0.0028*</td><td>0.0001</td></tr>
+              <tr><td>IV term slope</td><td>—</td><td>#4</td><td>−0.0012</td><td>0.0001</td></tr>
+              <tr><td>Strike cov. (N)</td><td>#2</td><td>#5</td><td>+0.0074***</td><td>0.0000</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:1.5rem;padding:1.25rem;background:rgba(14,124,123,0.08);border:1px solid rgba(14,124,123,0.2);">
+            <div class="chart-title" style="margin-bottom:0.75rem;">Model Performance Metrics</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+              <div><div style="font-family:var(--font-mono);font-size:1.6rem;color:var(--mint)">0.666</div><div style="font-size:0.78rem;color:var(--muted)">OLS R²</div></div>
+              <div><div style="font-family:var(--font-mono);font-size:1.6rem;color:var(--mint)">0.952</div><div style="font-size:0.78rem;color:var(--muted)">RF OOB R²</div></div>
+              <div><div style="font-family:var(--font-mono);font-size:1.6rem;color:var(--gold)">0.286</div><div style="font-size:0.78rem;color:var(--muted)">R² Gap (non-linearity)</div></div>
+              <div><div style="font-family:var(--font-mono);font-size:1.6rem;color:var(--gold)">0.300</div><div style="font-size:0.78rem;color:var(--muted)">Spearman ρ (rank agreement)</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cross-Asset Panel -->
+    <div class="results-panel" id="panel-cross">
+      <div class="results-layout">
+        <div>
+          <div class="chart-title" style="margin-bottom:1rem;">Cross-Asset Backtest — 99% VaR</div>
+          <table class="data-table">
+            <thead><tr><th>Asset</th><th>Model</th><th>N</th><th>Rate</th><th>Kupiec p</th><th>CC p</th><th>Pass</th></tr></thead>
+            <tbody>
+              <tr class="highlight-row"><td>GLD</td><td>GARCH</td><td>2,263</td><td>0.75%</td><td>0.213</td><td>0.612</td><td class="pass">✓</td></tr>
+              <tr><td>GLD</td><td>RND</td><td>2,263</td><td>2.25%</td><td style="color:var(--red)">&lt;0.001</td><td>0.884</td><td class="fail">✗</td></tr>
+              <tr class="highlight-row"><td>IWM</td><td>GARCH</td><td>2,263</td><td>1.10%</td><td>0.622</td><td>0.280</td><td class="pass">✓</td></tr>
+              <tr><td>IWM</td><td>RND</td><td>2,263</td><td>2.56%</td><td style="color:var(--red)">&lt;0.001</td><td>0.004</td><td class="fail">✗</td></tr>
+              <tr class="highlight-row"><td>QQQ</td><td>GARCH</td><td>2,248</td><td>1.02%</td><td>0.913</td><td>0.234</td><td class="pass">✓</td></tr>
+              <tr><td>QQQ</td><td>RND</td><td>2,248</td><td>2.71%</td><td style="color:var(--red)">&lt;0.001</td><td>0.110</td><td class="fail">✗</td></tr>
+              <tr class="highlight-row"><td>TLT</td><td>GARCH</td><td>2,263</td><td>0.66%</td><td>0.086</td><td>0.655</td><td class="pass">✓</td></tr>
+              <tr><td>TLT</td><td>RND</td><td>2,263</td><td>2.52%</td><td style="color:var(--red)">&lt;0.001</td><td>0.003</td><td class="fail">✗</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="chart-title" style="margin-bottom:1rem;">σ(t) SHAP Rank #2 in Every Asset</div>
+          <table class="data-table">
+            <thead><tr><th>Asset</th><th>σ(t) Rank</th><th>OOB R²</th><th>OLS R²</th><th>R² Gap</th></tr></thead>
+            <tbody>
+              <tr><td>SPX</td><td style="color:var(--mint)">#2</td><td>0.952</td><td>0.666</td><td>0.286</td></tr>
+              <tr><td>GLD</td><td style="color:var(--mint)">#2</td><td>0.989</td><td>0.412</td><td style="color:var(--gold)">0.577</td></tr>
+              <tr><td>IWM</td><td style="color:var(--mint)">#2</td><td>0.966</td><td>0.490</td><td>0.476</td></tr>
+              <tr><td>QQQ</td><td style="color:var(--mint)">#2</td><td>0.974</td><td>0.577</td><td>0.397</td></tr>
+              <tr><td>TLT</td><td style="color:var(--mint)">#2</td><td>0.979</td><td>0.246</td><td style="color:var(--gold)">0.733</td></tr>
+              <tr class="highlight-row"><td>Pooled</td><td style="color:var(--mint)">#2</td><td>0.973</td><td>—</td><td>—</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:1.5rem;">
+            <div class="chart-title" style="margin-bottom:1rem;">Diebold-Mariano Tests — COVID Window</div>
+            <div id="dmBars" style="margin-top:0.5rem;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VRP Panel -->
+    <div class="results-panel" id="panel-vrp">
+      <div class="results-layout">
+        <div>
+          <div class="chart-title" style="margin-bottom:1rem;">Variance Risk Premium by Asset</div>
+          <table class="data-table">
+            <thead><tr><th>Asset</th><th>Mean VRP</th><th>Sign</th><th>t-stat (NW)</th><th>Implication</th></tr></thead>
+            <tbody>
+              <tr><td>GLD</td><td style="color:var(--green)">+0.0018</td><td style="color:var(--green)">+</td><td>+3.12**</td><td style="color:rgba(255,255,255,0.55)">Options expensive → RND conservative</td></tr>
+              <tr><td>IWM</td><td style="color:var(--red)">−0.012</td><td style="color:var(--red)">−</td><td>−4.87***</td><td style="color:rgba(255,255,255,0.55)">Options cheap → crash risk underpriced</td></tr>
+              <tr><td>QQQ</td><td style="color:var(--red)">−0.009</td><td style="color:var(--red)">−</td><td>−4.21***</td><td style="color:rgba(255,255,255,0.55)">2022 selloff not priced by options</td></tr>
+              <tr><td>TLT</td><td style="color:var(--red)">−0.007</td><td style="color:var(--red)">−</td><td>−3.64***</td><td style="color:rgba(255,255,255,0.55)">Flight-to-safety partially compensates</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:2rem;background:rgba(255,255,255,0.03);border:1px solid var(--border);">
+          <h4 style="font-size:0.95rem;margin-bottom:1rem;color:var(--mint)">The VRP Mechanism</h4>
+          <p style="font-size:0.875rem;color:rgba(255,255,255,0.6);line-height:1.75;margin-bottom:1rem;">
+            When VRP &lt; 0 (options cheap relative to realized variance), the risk-neutral
+            density assigns less probability to extreme outcomes than the physical distribution.
+            This causes RND VaR to be systematically too low — producing violation rates
+            of 2.25–2.71%, more than double the nominal 1%.
+          </p>
+          <p style="font-size:0.875rem;color:rgba(255,255,255,0.6);line-height:1.75;">
+            GLD's positive VRP partially insulates it — investors pay a premium for gold
+            downside protection, keeping RND more conservative. This produces GLD's lowest
+            violation rate (2.25%) among the four ETFs.
+          </p>
+          <div style="margin-top:1.5rem;padding:1rem;background:rgba(14,124,123,0.1);border-left:3px solid var(--teal);">
+            <p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--mint);">
+              Forward-looking ≠ faster in sudden crashes.<br/>
+              GARCH's backward-looking feedback responds same-day.
+              Options require market repricing time.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Services ─────────────────────────────────────────────────────────── -->
+<section id="services">
+  <div class="container">
+    <div class="section-label reveal">Services</div>
+    <h2 class="section-title reveal">What We Offer</h2>
+    <p class="section-intro reveal">
+      Research-grade quantitative risk advisory for institutions
+      that require more than spreadsheet-based models.
+    </p>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <span class="service-num">01 — Tier I</span>
+        <h3>Stress Testing & ICAAP Advisory</h3>
+        <p>GARCH-based stress scenarios, formal VaR backtesting, and
+        CBK/Basel III compliant ICAAP documentation. COVID-style shock
+        analysis with regime-conditional calibration.</p>
+        <div class="service-tags">
+          <span class="tag">GARCH-EVT</span>
+          <span class="tag">Kupiec/CC</span>
+          <span class="tag">Basel III</span>
+          <span class="tag">ICAAP</span>
+        </div>
+      </div>
+      <div class="service-card gold reveal">
+        <span class="service-num">02 — Tier II</span>
+        <h3>Model Validation & Documentation</h3>
+        <p>Independent review of VaR model assumptions, parameters,
+        and implementation against regulatory standards. Written Model
+        Validation Report for regulatory submission and board presentation.</p>
+        <div class="service-tags">
+          <span class="tag">Model Review</span>
+          <span class="tag">DM Tests</span>
+          <span class="tag">Documentation</span>
+        </div>
+      </div>
+      <div class="service-card purple reveal">
+        <span class="service-num">03 — Tier III</span>
+        <h3>NSE Equity Risk Analytics Platform</h3>
+        <p>Daily GARCH-EVT VaR, volatility regime dashboards, portfolio
+        tail risk, and drawdown analytics for all NSE listed equities.
+        Subscription-based SaaS for fund managers and pension funds.</p>
+        <div class="service-tags">
+          <span class="tag">NSE</span>
+          <span class="tag">Daily VaR</span>
+          <span class="tag">SaaS</span>
+          <span class="tag">Coming Soon</span>
+        </div>
+      </div>
+      <div class="service-card green reveal">
+        <span class="service-num">04 — Tier IV</span>
+        <h3>Training & Capacity Building</h3>
+        <p>Executive briefings, technical workshops, and quantitative
+        masterclasses. GARCH-EVT from theory to Python implementation.
+        IFC/World Bank funded capacity building programmes accepted.</p>
+        <div class="service-tags">
+          <span class="tag">Python</span>
+          <span class="tag">SHAP</span>
+          <span class="tag">Workshops</span>
+          <span class="tag">IFC/AfDB</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Mechanism ────────────────────────────────────────────────────────── -->
+<section id="mechanism">
+  <div class="container">
+    <div class="section-label reveal">Methodology</div>
+    <h2 class="section-title reveal">Why GARCH-EVT Wins</h2>
+    <p class="section-intro reveal">
+      The answer lies in one structural asymmetry between the two model families.
+    </p>
+    <div class="mechanism-grid">
+      <div class="mech-card reveal">
+        <div class="mech-icon">⚡</div>
+        <h4>Immediate Volatility Feedback</h4>
+        <p>GARCH σ²ₜ absorbs ε²ₜ₋₁ on the same day as the shock.
+        VaR spikes immediately when realized losses hit.
+        No repricing lag. No market friction.</p>
+      </div>
+      <div class="mech-card reveal">
+        <div class="mech-icon">📉</div>
+        <h4>VRP Creates Structural Bias</h4>
+        <p>When VRP &lt; 0 (IWM, QQQ, TLT), option prices embed a
+        discount relative to realized variance. RND systematically
+        underestimates physical crash risk — producing 2.25–2.71%
+        violation rates vs nominal 1%.</p>
+      </div>
+      <div class="mech-card reveal">
+        <div class="mech-icon">🔍</div>
+        <h4>SHAP Confirms the Driver</h4>
+        <p>Random Forest + SHAP attribution across 9,037 observations
+        confirms GARCH σ(t) is the dominant exogenous spread driver
+        in every asset class and every market regime. R² gap of 0.286
+        validates non-linear RF+SHAP over linear OLS.</p>
+      </div>
+    </div>
+    <div class="mech-quote reveal">
+      "Forward-looking does not mean faster."
+      <span>In the COVID-19 crash, GARCH's backward-looking volatility feedback
+      responded same-day while the options market required repricing time.
+      This holds across SPX, GLD, IWM, QQQ, and TLT.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Paper CTA ─────────────────────────────────────────────────────────── -->
+<section id="paper">
+  <div class="container">
+    <div class="paper-card reveal">
+      <div>
+        <div class="paper-meta">Working Paper · 2026</div>
+        <h2>Tail-Risk Disagreement in VaR Models:<br/>GARCH-EVT vs Option-Implied RND</h2>
+        <p>Across SPX and Cross-Asset ETF Panels. 30 pages. Full equations,
+        descriptive statistics, GARCH parameter estimates, backtesting results,
+        SHAP attribution, and cross-study comparison.</p>
+        <div class="paper-findings">
+          <div class="paper-finding">GARCH-EVT achieves 0.94% violation rate at 99% (nominal 1%)</div>
+          <div class="paper-finding">RND fails all Kupiec tests for cross-asset ETFs at p &lt; 0.001</div>
+          <div class="paper-finding">DM tests confirm GARCH outperformance during COVID for all 5 assets</div>
+          <div class="paper-finding">GARCH σ(t): β = −0.0181*** and SHAP rank #2 exogenous in every panel</div>
+          <div class="paper-finding">Negative VRP for IWM, QQQ, TLT is the theoretical mechanism</div>
+        </div>
+      </div>
+      <div class="paper-actions">
+        <div class="paper-badge">JEL: G17, G12, C58, C45</div>
+        <a href="#contact" class="btn-primary">Request Paper</a>
+        <a href="#contact" class="btn-outline">Contact for Collaboration</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Contact ───────────────────────────────────────────────────────────── -->
+<section id="contact">
+  <div class="container">
+    <div class="section-label reveal">Contact</div>
+    <h2 class="section-title reveal">Start a Conversation</h2>
+    <p class="section-intro reveal">
+      Initial consultations are complimentary and without obligation.
+    </p>
+    <div class="contact-grid">
+      <form class="contact-form reveal" onsubmit="handleSubmit(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" placeholder="Hillary" required />
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" placeholder="Cheruiyot" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" placeholder="you@institution.com" required />
+        </div>
+        <div class="form-group">
+          <label>Organisation</label>
+          <input type="text" placeholder="Bank, Fund, Regulator..." />
+        </div>
+        <div class="form-group">
+          <label>Area of Interest</label>
+          <select>
+            <option value="">Select a service...</option>
+            <option>Stress Testing & ICAAP Advisory</option>
+            <option>Model Validation & Documentation</option>
+            <option>NSE Analytics Platform</option>
+            <option>Training & Capacity Building</option>
+            <option>Working Paper Request</option>
+            <option>Research Collaboration</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea rows="4" placeholder="Tell us about your risk management needs..."></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="align-self:flex-start;">
+          Send Message →
+        </button>
+        <p id="form-success" style="display:none;color:var(--mint);font-size:0.85rem;margin-top:0.5rem;">
+          ✓ Message received. We'll be in touch within 2 business days.
+        </p>
+      </form>
+
+      <div class="reveal">
+        <div class="contact-info">
+          <div class="contact-item">
+            <div class="contact-item-icon">✉</div>
+            <div class="contact-item-text">
+              <h5>Email</h5>
+              <p>hcheruiy@charlotte.edu</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">🌐</div>
+            <div class="contact-item-text">
+              <h5>Website</h5>
+              <p>tokimvaranalytics.vercel.app</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">🏛</div>
+            <div class="contact-item-text">
+              <h5>United States</h5>
+              <p>Tokim Analytics LLC<br/>North Carolina, USA</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">🌍</div>
+            <div class="contact-item-text">
+              <h5>East Africa</h5>
+              <p>Tokim Analytics Limited<br/>Nairobi, Kenya</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">🎓</div>
+            <div class="contact-item-text">
+              <h5>Academic Affiliation</h5>
+              <p>MS Mathematical Finance<br/>UNC Charlotte</p>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:2rem;padding:1.5rem;background:rgba(14,124,123,0.08);border:1px solid rgba(14,124,123,0.2);">
+          <p style="font-size:0.85rem;color:rgba(255,255,255,0.65);line-height:1.75;">
+            All initial consultations are complimentary and without obligation.
+            Custom proposals delivered within 5 business days of a discovery call.
+            NDAs executed prior to any data exchange.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ────────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-logo">TOKIM <span>ANALYTICS</span></div>
+  <div class="footer-links">
+    <a href="#research">Research</a>
+    <a href="#results">Results</a>
+    <a href="#services">Services</a>
+    <a href="#paper">Paper</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 Tokim Analytics LLC · All rights reserved</div>
+</footer>
+
+<!-- ── Scripts ───────────────────────────────────────────────────────────── -->
+<script>
+// ── Backtest Chart ──────────────────────────────────────────────────────
+const backtestCtx = document.getElementById('backtestChart').getContext('2d');
+const backtestChart = new Chart(backtestCtx, {
+  type: 'bar',
+  data: {
+    labels: ['99% GARCH', '99% RND', '95% GARCH', '95% RND'],
+    datasets: [{
+      label: 'Violation Rate (%)',
+      data: [0.94, 1.42, 4.51, 5.82],
+      backgroundColor: ['rgba(14,124,123,0.75)','rgba(226,176,74,0.7)','rgba(14,124,123,0.75)','rgba(192,57,43,0.7)'],
+      borderColor: ['#0E7C7B','#E2B04A','#0E7C7B','#C0392B'],
+      borderWidth: 1,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      annotation: {},
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.raw}% violation rate`
+        }
+      }
+    },
+    scales: {
+      x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#718096', font: { family: 'JetBrains Mono', size: 11 } } },
+      y: {
+        grid: { color: 'rgba(255,255,255,0.05)' },
+        ticks: { color: '#718096', font: { family: 'JetBrains Mono', size: 11 }, callback: v => v + '%' },
+        min: 0, max: 7,
+      }
+    }
+  }
+});
+
+// Nominal line annotation drawn manually on chart canvas
+backtestCtx.canvas.addEventListener('resize', drawNominals);
+function drawNominals() {
+  // handled via Chart.js afterDraw plugin below
+}
+
+// ── SHAP bars ───────────────────────────────────────────────────────────
+const shapData = [
+  { label: 'rn_var₀₁',       value: 0.0144, max: 0.016, color: '#0E7C7B', note: 'Partly mechanical' },
+  { label: 'GARCH σ(t)',      value: 0.0097, max: 0.016, color: '#E2B04A', note: 'Key exogenous driver' },
+  { label: 'ATM IV',          value: 0.0004, max: 0.016, color: '#718096', note: '' },
+  { label: 'IV term slope',   value: 0.0001, max: 0.016, color: '#718096', note: '' },
+  { label: 'Put-call skew',   value: 0.0001, max: 0.016, color: '#718096', note: '' },
+  { label: 'Strike cov. (N)', value: 0.0000, max: 0.016, color: '#718096', note: '' },
+];
+
+const shapContainer = document.getElementById('shapBars');
+shapData.forEach(d => {
+  const pct = (d.value / d.max * 100).toFixed(1);
+  const row = document.createElement('div');
+  row.className = 'shap-row';
+  row.innerHTML = `
+    <div class="shap-label">${d.label}</div>
+    <div class="shap-bar-track">
+      <div class="shap-bar-fill" style="width:0%;background:${d.color}" data-w="${pct}%"></div>
+    </div>
+    <div class="shap-value">${d.value.toFixed(4)}</div>
+  `;
+  shapContainer.appendChild(row);
+});
+
+// DM bars
+const dmData = [
+  { asset: 'GLD', dm: 14.70, max: 16 },
+  { asset: 'IWM', dm: 8.34,  max: 16 },
+  { asset: 'QQQ', dm: 7.32,  max: 16 },
+  { asset: 'TLT', dm: 12.89, max: 16 },
+  { asset: 'SPX', dm: 6.2,   max: 16, est: true },
+];
+const dmContainer = document.getElementById('dmBars');
+dmData.forEach(d => {
+  const pct = (d.dm / d.max * 100).toFixed(1);
+  const row = document.createElement('div');
+  row.className = 'shap-row';
+  row.innerHTML = `
+    <div class="shap-label">${d.asset}</div>
+    <div class="shap-bar-track">
+      <div class="shap-bar-fill" style="width:0%;background:var(--teal)" data-w="${pct}%"></div>
+    </div>
+    <div class="shap-value" style="color:var(--green)">${d.dm.toFixed(2)}${d.est?'':' ***'}</div>
+  `;
+  dmContainer.appendChild(row);
+});
+
+// ── Chart tab switching ─────────────────────────────────────────────────
+function switchChart(tab) {
+  document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('[id^="chart-"]').forEach(p => p.style.display = 'none');
+  event.target.classList.add('active');
+  document.getElementById('chart-' + tab).style.display = 'block';
+  if (tab === 'backtest') backtestChart.update();
+}
+
+// ── Results tab switching ───────────────────────────────────────────────
+function switchResults(tab) {
+  document.querySelectorAll('.results-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.results-panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+  animateBars();
+}
+
+// ── Form submit ─────────────────────────────────────────────────────────
+function handleSubmit(e) {
+  e.preventDefault();
+  document.getElementById('form-success').style.display = 'block';
+  e.target.reset();
+}
+
+// ── Scroll reveal ───────────────────────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      // animate bars when visible
+      if (entry.target.querySelector && entry.target.querySelector('.shap-bar-fill')) {
+        animateBars();
+      }
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── Bar animations ──────────────────────────────────────────────────────
+function animateBars() {
+  document.querySelectorAll('.shap-bar-fill[data-w]').forEach(bar => {
+    setTimeout(() => { bar.style.width = bar.dataset.w; }, 100);
+  });
+}
+// Initial animation trigger
+setTimeout(animateBars, 800);
+
+// ── Active nav link ─────────────────────────────────────────────────────
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current
+      ? 'var(--mint)' : '';
+  });
+});
+</script>
+</body>
+</html>
