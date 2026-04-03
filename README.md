@@ -10,7 +10,7 @@ npm i -g vercel
 cd tokim-site
 vercel
 # Follow prompts — set project name to: tokimvaranalytics
-# URL will be: tokimvaranalytics.vercel.app
+# URL will be: https://tokimvaranalytics-dusky.vercel.app
 ```
 
 ### Option 2 — Vercel Dashboard
