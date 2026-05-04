@@ -20,7 +20,7 @@ vercel
 4. Framework: Other (Static)
 5. Deploy
 
-### Option 3 — GitHub + Vercel auto-deploy
+### Option 3 — GitHub + Vercel auto-deploy 
 ```bash
 git init
 git add .
@@ -49,7 +49,7 @@ tokim-site/
 - Fully responsive
 
 ## Customisation
-- Update email in contact section (search: hcheruiyot@uncc.edu)
+- Update email in contact section (search: cheruiyoth@gmail.com)
 - Update LinkedIn URL (search: linkedin.com/in/hillary-cheruiyot)
 - When SSRN paper is live, add the actual PDF link
 - When Kenya site is ready, add navigation link to it
